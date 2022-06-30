@@ -1,0 +1,59 @@
+*** Targets ***
+
+probe = FPing
+
+menu = Top
+title = Network Latency Monitoring
+
++ InternetSites
+
+menu = Internet Sites
+title = Internet Sites
+
+++ GoogleSearch
+menu = Google
+title = google.com
+host = google.com
+
++ DNS
+menu = DNS
+title = DNS
+
+++ CloudflareDNS-1
+menu = Cloudflare DNS 1
+title = Cloudflare DNS 1.1.1.1
+host = 1.1.1.1
+
+++ CloudflareDNS-2
+menu = Cloudflare DNS 2
+title = Cloudflare DNS 1.0.0.1
+host = 1.0.0.1
+
+++ Quad9-1
+menu = Quad9 DNS 1
+title = Quad9 DNS 9.9.9.9
+host = 9.9.9.9
+
+++ Quad9-2
+menu = Quad9 DNS 2
+title = Quad9 DNS 149.112.112.112
+host = 149.112.112.112
+
++ ISP
+menu = Internet Service Provider
+title = Internet Service Provider
+
+++ eero
+menu = eero
+title = eero 192.168.4.1
+host = 192.168.4.1
+
+++ ISP-router
+menu = ISP router
+title = ISP router 192.168.1.1
+host = 192.168.1.1
+
+++ ISP-gateway
+menu = ISP WAN gateway
+title = ISP WAN gateway 47.188.171.1
+host = 47.188.171.1

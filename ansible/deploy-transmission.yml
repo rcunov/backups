@@ -1,0 +1,60 @@
+---
+- name: Deploy transmission-daemon with OpenVPN to Debian-based hosts
+  hosts: all
+  become: true
+  
+  tasks:
+  - name: End if host is not Debian-based
+    fail:
+      msg: Host {{ inventory_hostname }} is not Debian-based, exiting...
+    when: ansible_os_family != "Debian"
+  - name: Install transmission-daemon and openvpn
+    apt:
+      name: ['transmission-daemon', 'openvpn', 'openresolv']
+      state: latest
+      update_cache: yes
+  - name: Edit openvpn config
+    replace:
+      path: /etc/default/openvpn
+      regexp: '#AUTOSTART="all"'
+      replace: 'AUTOSTART="autostart"'
+  - name: Stop transmission-daemon
+    ansible.builtin.service:
+      name: transmission-daemon
+      state: stopped
+  - name: Copy transmission config file
+    ansible.builtin.copy:
+      src: settings.json
+      dest: /etc/transmission-daemon/settings.json
+      owner: debian-transmission
+      group: debian-transmission
+      mode: '0600'
+  - name: Copy openvpn client config file
+    ansible.builtin.copy:
+      src: sweden.ovpn
+      dest: /etc/openvpn/autostart.conf
+      owner: root
+      group: root
+      mode: '0600'
+  - name: Ensure secrets file exists
+    stat: 
+      path: /etc/openvpn/.vpn-secrets
+    register: secrets
+  - name: Pause if secrets file does not exist
+    pause:
+      prompt: >
+        "Put credentials into /etc/openvpn/.vpn-secrets
+        (username on first line, password on second) "
+    when: not secrets.stat.exists
+  - name: Secure secrets file permissions
+    ansible.builtin.file:
+      path: /etc/openvpn/.vpn-secrets
+      owner: root
+      group: root
+      mode: '0600'
+  - name: Enable transmission-daemon
+    ansible.builtin.service:
+      name: transmission-daemon
+      enabled: yes
+  - name: Reboot to apply changes
+    reboot:

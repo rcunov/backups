@@ -1,0 +1,14 @@
+---
+- name: Deploy QEMU guest agent
+  hosts: virtual
+  become: true
+  
+  tasks:
+    - name: Install QEMU guest agent
+      ansible.builtin.package:
+        name: "qemu-guest-agent"
+        state: latest
+    - name: Start QEMU guest agent
+      ansible.builtin.service:
+        name: qemu-guest-agent
+        state: started

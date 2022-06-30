@@ -1,0 +1,19 @@
+---
+version: "3.7"
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    env_file:
+      - plex_env.ini
+    volumes:
+      - ~/docker/plex:/config
+      - /mnt/data/one/Media/TV:/tv1
+      - /mnt/data/two/Media/TV:/tv2
+      - /mnt/data/one/Media/Movies:/movies1
+      - /mnt/data/two/Media/Movies:/movies2
+      - /mnt/data/one/Media/Music:/music1
+      - /mnt/data/two/Media/Music:/music2
+      - /mnt/data/two/Media/Other:/other
+    restart: unless-stopped

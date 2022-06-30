@@ -1,0 +1,66 @@
+version: '3.7'
+services:
+
+  npm_db:
+    image: 'jc21/mariadb-aria:latest'
+    container_name: npm_db
+    restart: unless-stopped
+    env_file:
+      - npm_db_env.ini
+    volumes:
+      - ~/docker/npm_db/db:/var/lib/mysql
+    networks:
+      - npm_net
+
+  npm_app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm_app
+    restart: unless-stopped
+    ports:
+      - '80:81'
+      - '443:443'
+    env_file:
+      - npm_app_env.ini
+    volumes:
+      - ~/docker/npm_app/data:/data
+      - ~/docker/npm_app/letsencrypt:/etc/letsencrypt
+    networks:
+      - npm_net
+    depends_on:
+      - npm_db
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    restart: unless-stopped
+    environment: # port 80
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - ~/docker/heimdall/config:/config
+    networks:
+      - npm_net
+    depends_on:
+      - npm_app
+
+  smokeping:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: smokeping
+    restart: unless-stopped
+    environment: # port 80
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - ~/docker/smokeping/config:/config
+      - ~/docker/smokeping/data:/data
+    networks:
+      - npm_net
+    depends_on:
+      - npm_app
+
+networks:
+  npm_net:

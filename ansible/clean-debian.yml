@@ -1,0 +1,15 @@
+---
+- name: Clean up Debian packages
+  hosts: all
+  become: true
+  
+  tasks:
+    - name: Do autoremove
+      apt:
+        autoremove: yes
+      when: ansible_os_family == "Debian"
+      # for some reason, it doesn't work if you run both of these within the same module
+    - name: Do autoclean
+      apt:
+        autoclean: yes
+      when: ansible_os_family == "Debian"

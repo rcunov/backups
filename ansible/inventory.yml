@@ -1,0 +1,23 @@
+all:
+  hosts:
+  children: 
+    debian:
+      hosts:
+        rcunov@seedbox.host:
+        rcunov@nas.host:
+        rcunov@pve.host:
+        rcunov@docker.host:
+        rcunov@192.168.7.98:
+        pi@tiny.host:
+    virtual:
+      hosts:
+        rcunov@seedbox.host:
+        rcunov@nas.host:
+        rcunov@docker.host:
+        rcunov@192.168.7.98:
+    important:
+      hosts:
+        rcunov@pve.host:
+        rcunov@nas.host:
+        rcunov@docker.host:
+        pi@tiny.host:

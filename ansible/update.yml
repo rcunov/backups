@@ -1,0 +1,49 @@
+---
+- name: Perform OS updates to Linux hosts
+  hosts: all
+  become: true
+  tasks:
+    - name: Update all packages on Debian-like hosts
+      apt:
+        name: '*'
+        update_cache: yes
+        state: latest
+      when: ansible_os_family == "Debian"
+
+    - name: Update all packages on RedHat-like hosts
+      dnf: 
+        name: '*' 
+        update_cache: yes
+        state: latest 
+      when: ansible_os_family == "RedHat"
+
+    - name: Check Debian-like hosts for reboots
+      stat:
+        path: /var/run/reboot-required
+      register: reboot_required_file
+      when: ansible_os_family == "Debian"
+      
+    - name: Check RedHat-like hosts for reboots
+      shell: needs-restarting -r > /dev/null
+      register: result
+      ignore_errors: yes
+      when: ansible_os_family == "RedHat"
+      check_mode: false
+  # when running playbooks in check mode, command and shell modules will not run.
+  # this breaks the reboot module below since the result variable will have no value
+  # if the module above isn't run. "check_mode: false" ensures the module will run in check mode
+
+- name: Perform pending reboots on unimportant hosts
+  hosts: all:!important
+  tasks:
+    - name: Reboot hosts
+      reboot:
+      when: result.rc == 1 or reboot_required_file.stat.exists == true
+
+- name: Print important hosts that need reboots
+  hosts: important
+  tasks:
+    - name: Print important hosts that need reboots
+      ansible.builtin.debug:
+        msg: System {{ inventory_hostname }} needs a reboot
+      when: result.rc == 1 or reboot_required_file.stat.exists == true
