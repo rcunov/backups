@@ -38,7 +38,7 @@
   tasks:
     - name: Reboot hosts
       reboot:
-      when: result.rc == 1 or reboot_required_file.stat.exists == true
+      when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
 
 - name: Print important hosts that need reboots
   hosts: important
@@ -46,4 +46,4 @@
     - name: Print important hosts that need reboots
       ansible.builtin.debug:
         msg: System {{ inventory_hostname }} needs a reboot
-      when: result.rc == 1 or reboot_required_file.stat.exists == true
+      when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
