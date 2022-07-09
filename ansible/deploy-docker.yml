@@ -1,40 +1,63 @@
 ---
-- name: Deploy Docker to Debian-based hosts
+- name: Deploy Docker to Debian and Ubuntu hosts
   hosts: all
   become: true
-  
+
   tasks:
-  - name: End if host is not Debian
-    fail:
-      msg: Host {{ inventory_hostname }} is not Debian, exiting...
-    when: ansible_distribution != "Debian"
   - name: Install prerequisites for Docker
     apt:
       name: ['ca-certificates', 'curl', 'gnupg', 'lsb-release']
       state: latest
       update_cache: yes
-  - name: Add Docker repository keys
+    when: (ansible_distribution == "Debian") or (ansible_distribution == "Ubuntu")
+  - name: Add Docker repository keys for Debian
     shell: >
       wget -O- https://download.docker.com/linux/debian/gpg
       | gpg --dearmor > /usr/share/keyrings/docker-archive-keyring.gpg
-  - name: Add Docker repository to apt sources
+    when: ansible_distribution == "Debian"
+  - name: Create keyrings folder on Ubuntu
+    ansible.builtin.file:
+      path: /etc/apt/keyrings
+      state: directory
+      owner: root
+      group: root
+      mode: '0755'
+    when: ansible_distribution == "Ubuntu"
+  - name: Add Docker repository keys for Ubuntu
+    shell: >
+      wget -O- https://download.docker.com/linux/ubuntu/gpg
+      | gpg --dearmor > /etc/apt/keyrings/docker.gpg
+    when: ansible_distribution == "Ubuntu"
+  - name: Add Docker repository to apt sources for Ubuntu
+    shell: >
+      echo "deb [arch=$(dpkg --print-architecture)
+      signed-by=/etc/apt/keyrings/docker.gpg]
+      https://download.docker.com/linux/ubuntu
+      $(lsb_release -cs) stable"
+      > /etc/apt/sources.list.d/docker.list
+    when: ansible_distribution == "Ubuntu"
+  - name: Add Docker repository to apt sources for Debian
     shell: >
       echo "deb [arch=$(dpkg --print-architecture)
       signed-by=/usr/share/keyrings/docker-archive-keyring.gpg]
       https://download.docker.com/linux/debian
-      $(lsb_release -cs) stable" 
+      $(lsb_release -cs) stable"
       > /etc/apt/sources.list.d/docker.list
+    when: ansible_distribution == "Debian"
   - name: Install Docker packages
     apt:
-      name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'python3-pip', 'python3-setuptools', 'build-essential']
+      name: ['docker-ce', 'docker-ce-cli', 'containerd.io', 'python3-pip']
       state: latest
       update_cache: yes
+    when: (ansible_distribution == "Debian") or (ansible_distribution == "Ubuntu")
   - name: Install docker-compose
     pip:
       name: docker-compose
       executable: pip3
+    when: (ansible_distribution == "Debian") or (ansible_distribution == "Ubuntu")
   - name: Add rcunov to docker group
     ansible.builtin.user:
       name: rcunov
       groups: docker
       append: yes
+    when: (ansible_distribution == "Debian") or (ansible_distribution == "Ubuntu")
