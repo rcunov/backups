@@ -7,7 +7,7 @@ VM_NET=vmbr0
 
 read -p "Ensure variables are correct. Press enter when done. "
 
-qm create $VM_ID --memory 2048 --net0 virtio,bridge=$VM_NET
+qm create $VM_ID --memory 2048 --cpu cputype=host --cores 2 --net0 virtio,bridge=$VM_NET
 qm importdisk $VM_ID $VM_IMAGE $VM_STORAGE
 qm set $VM_ID --scsihw virtio-scsi-pci --scsi0 $VM_STORAGE:vm-$VM_ID-disk-1
 
