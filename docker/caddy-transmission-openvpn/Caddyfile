@@ -1,0 +1,7 @@
+dns-entry.example.com {
+	reverse_proxy http://address:1234
+
+	tls {
+		dns cloudflare my-super-secret-api-token
+	}
+}

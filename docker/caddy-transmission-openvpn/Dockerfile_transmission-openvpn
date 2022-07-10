@@ -1,0 +1,3 @@
+FROM haugene/transmission-openvpn
+
+RUN transmission-remote -w /data/two/Seeds

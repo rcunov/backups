@@ -1,0 +1,45 @@
+---
+version: '3.7'
+services:
+  caddy:
+    container_name: caddy
+    build:
+      context: .
+      dockerfile: Dockerfile_caddy
+    restart: unless-stopped
+    networks:
+      - caddy_net
+    ports:
+      - '80:80'
+      - '443:443'
+      - '2019:2019'
+    volumes:
+      - ~/docker/caddy/config:/config
+      - ~/docker/caddy/data:/data
+      - ~/compose/Caddyfile:/etc/caddy/Caddyfile
+
+  transmission-openvpn:
+    container_name: transmission-openvpn
+    build:
+      context: .
+      dockerfile: Dockerfile_caddy
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+    volumes:
+      - /mnt/data:/data
+      - ~/docker/transmission-openvpn:/data/transmission-home
+    env_file:
+      - transmission-openvpn_env.ini
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+    networks:
+      - caddy_net
+    depends_on:
+      - caddy
+#    ports:
+#      - '9091:9091'
+networks:
+  caddy_net:
