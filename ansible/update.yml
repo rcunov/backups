@@ -11,10 +11,10 @@
       when: ansible_os_family == "Debian"
 
     - name: Update all packages on RedHat-like hosts
-      dnf: 
-        name: '*' 
+      dnf:
+        name: '*'
         update_cache: yes
-        state: latest 
+        state: latest
       when: ansible_os_family == "RedHat"
 
     - name: Check Debian-like hosts for reboots
@@ -22,7 +22,7 @@
         path: /var/run/reboot-required
       register: reboot_required_file
       when: ansible_os_family == "Debian"
-      
+
     - name: Check RedHat-like hosts for reboots
       shell: needs-restarting -r > /dev/null
       register: result
@@ -35,10 +35,12 @@
 
 - name: Perform pending reboots on unimportant hosts
   hosts: all:!important
+  become: true
   tasks:
     - name: Reboot hosts
       reboot:
-      when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
+      when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or
+        (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
 
 - name: Print important hosts that need reboots
   hosts: important
@@ -46,4 +48,5 @@
     - name: Print important hosts that need reboots
       ansible.builtin.debug:
         msg: System {{ inventory_hostname }} needs a reboot
-      when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
+      when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or
+        (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
