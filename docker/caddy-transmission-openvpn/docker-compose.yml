@@ -22,7 +22,7 @@ services:
     container_name: transmission-openvpn
     build:
       context: .
-      dockerfile: Dockerfile_caddy
+      dockerfile: Dockerfile_transmission-openvpn
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
