@@ -2,7 +2,7 @@
 - name: Clean up Debian packages
   hosts: all
   become: true
-  
+
   tasks:
     - name: Do autoremove
       apt:
