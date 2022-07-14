@@ -1,6 +1,7 @@
+---
 all:
   hosts:
-  children: 
+  children:
     virtual:
       hosts:
         rcunov@seedbox.host:
@@ -13,4 +14,4 @@ all:
         rcunov@pve.host:
         rcunov@nas.host:
         rcunov@docker.host:
-        pi@tiny.host:
+        # pi@tiny.host:
