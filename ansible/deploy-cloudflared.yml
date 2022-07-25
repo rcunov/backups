@@ -1,0 +1,43 @@
+---
+- name: Deploy cloudflared to AMD64 Debian and RHEL-based hosts
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install cloudflared binary for Debian
+      apt:
+        deb:
+          "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb"
+      when: ansible_os_family == "Debian"
+
+    - name: Install cloudflared binary for RHEL
+      yum:
+        name:
+          "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm"
+        state: present
+      when: ansible_os_family == "Red Hat"
+
+    # - name: Create cloudflared user
+    #   user:
+    #     name: cloudflared
+    #     shell: /usr/sbin/nologin
+    #     system: true
+    #     create_home: false
+
+    # - name: Set cloudflared binary permissions
+    #   file:
+    #     path: /usr/local/bin/cloudflared
+    #     owner: cloudflared
+    #     group: cloudflared
+    #     mode: '0600'
+
+    - name: Copy cloudflared systemd script
+      copy:
+        src: cloudflared.service
+        dest: /etc/systemd/system/cloudflared.service
+
+    - name: Enable and run cloudflared
+      systemd:
+        name: cloudflared
+        state: started
+        enabled: true
