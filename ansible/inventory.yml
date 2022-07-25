@@ -4,14 +4,13 @@ all:
   children:
     virtual:
       hosts:
-        rcunov@seedbox.host:
         rcunov@nas.host:
         rcunov@docker.host:
-        rcunov@192.168.7.98:
-        rcunov@192.168.7.69:
+        rcunov@pihole.host:
     important:
       hosts:
         rcunov@pve.host:
         rcunov@nas.host:
         rcunov@docker.host:
+        rcunov@pihole.host:
         # pi@tiny.host:
