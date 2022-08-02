@@ -2,7 +2,7 @@
 - name: Add Samba share to host storage
   hosts: all
   become: true
-  
+
   tasks:
   - name: Install cifs-utils package
     ansible.builtin.package:
@@ -14,7 +14,7 @@
       state: directory
       mode: '0755'
   - name: Ensure secrets file exists
-    stat: 
+    stat:
       path: /root/.smb-secrets
     register: secrets
   - name: Pause if secrets file does not exist
@@ -31,13 +31,14 @@
       mode: '0600'
   - name: Mount share to /mnt/data
     ansible.posix.mount:
-      src: //nas.host/nas/
+      src: //nas.lan/nas/
       path: /mnt/data
-      opts: x-systemd.automount,credentials=/root/.smb-secrets,file_mode=0775,dir_mode=0775,uid=1000,gid=1000
+      opts:
+        "x-systemd.automount,credentials=/root/.smb-secrets,file_mode=0775,dir_mode=0775,uid=1000,gid=1000"
       state: mounted
       fstype: cifs
   - name: Make sure drive mounts on boot
     ansible.builtin.systemd:
       name: systemd-networkd-wait-online
       state: started
-      enabled: yes
+      enabled: true
