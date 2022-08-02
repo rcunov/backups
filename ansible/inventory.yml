@@ -1,17 +1,17 @@
 ---
 all:
-  hosts:
+  lans:
   children:
     virtual:
-      hosts:
-        rcunov@nas.host:
-        rcunov@docker.host:
-        rcunov@pihole.host:
+      lans:
+        rcunov@nas.lan:
+        rcunov@docker.lan:
+        rcunov@pihole.lan:
         rcunov@192.168.7.10:
     important:
-      hosts:
-        rcunov@pve.host:
-        rcunov@nas.host:
-        rcunov@docker.host:
-        rcunov@pihole.host:
-        # pi@tiny.host:
+      lans:
+        rcunov@pve.lan:
+        rcunov@nas.lan:
+        rcunov@docker.lan:
+        rcunov@pi.hole:
+        # pi@tiny.lan:
