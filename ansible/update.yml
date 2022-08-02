@@ -6,14 +6,14 @@
     - name: Update all packages on Debian-like hosts
       apt:
         name: '*'
-        update_cache: yes
+        update_cache: true
         state: latest
       when: ansible_os_family == "Debian"
 
     - name: Update all packages on RedHat-like hosts
       dnf:
         name: '*'
-        update_cache: yes
+        update_cache: true
         state: latest
       when: ansible_os_family == "RedHat"
 
@@ -26,12 +26,13 @@
     - name: Check RedHat-like hosts for reboots
       shell: needs-restarting -r > /dev/null
       register: result
-      ignore_errors: yes
+      ignore_errors: true
       when: ansible_os_family == "RedHat"
       check_mode: false
-  # when running playbooks in check mode, command and shell modules will not run.
-  # this breaks the reboot module below since the result variable will have no value
-  # if the module above isn't run. "check_mode: false" ensures the module will run in check mode
+      # when running playbooks in check mode, command and shell modules will not
+      # run. this breaks the reboot module below since the result variable will
+      # have no value if the module above isn't run. "check_mode: false" ensures
+      # the module will run in check mode
 
 - name: Perform pending reboots on unimportant hosts
   hosts: all:!important
@@ -40,13 +41,15 @@
     - name: Reboot hosts
       reboot:
       when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or
-        (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
+        (ansible_facts['os_family'] == "Debian" and
+        reboot_required_file.stat.exists == true)
 
 - name: Print important hosts that need reboots
   hosts: important
   tasks:
     - name: Print important hosts that need reboots
       ansible.builtin.debug:
-        msg: System {{ inventory_hostname }} needs a reboot
+        msg: "System needs a reboot"
       when: (ansible_facts['os_family'] == "RedHat" and result.rc == 1) or
-        (ansible_facts['os_family'] == "Debian" and reboot_required_file.stat.exists == true)
+        (ansible_facts['os_family'] == "Debian" and
+        reboot_required_file.stat.exists == true)
