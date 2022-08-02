@@ -1,0 +1,21 @@
+---
+version: '3.7'
+services:
+  steam:
+    build:
+      context: .
+      dockerfile: Dockerfile_steam
+    container_name: steamcmd
+    # restart: unless-stopped
+    networks:
+      - steam
+    ports:
+      - '27015:27015/tcp'
+      - '27016:27016/tcp'
+      - '27015:27015/udp'
+      - '27016:27016/udp'
+    volumes:
+      - '~/docker/steam:/root/.steam/SteamApps/common/U3DS/Servers/MyServer'
+
+networks:
+  steam:

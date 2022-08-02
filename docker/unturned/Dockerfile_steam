@@ -1,0 +1,11 @@
+FROM steamcmd/steamcmd:latest
+
+RUN apt update && apt install nano -y
+
+COPY --chmod=755 run.sh .
+
+COPY Commands.dat .
+
+RUN /usr/bin/steamcmd +login anonymous +app_update 1110390 +quit
+    
+ENTRYPOINT tail -f /dev/null
