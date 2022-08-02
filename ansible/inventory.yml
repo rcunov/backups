@@ -3,13 +3,13 @@ all:
   lans:
   children:
     virtual:
-      lans:
+      hosts:
         rcunov@nas.lan:
         rcunov@docker.lan:
-        rcunov@pihole.lan:
+        rcunov@pi.hole:
         rcunov@192.168.7.10:
     important:
-      lans:
+      hosts:
         rcunov@pve.lan:
         rcunov@nas.lan:
         rcunov@docker.lan:
